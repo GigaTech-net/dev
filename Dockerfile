@@ -22,7 +22,7 @@ RUN set -ex; \
   apt-get update; \
   apt-get -y upgrade; \
   apt-get install -y \
-    python3-pip \
+    unzip \
     jq \
     wget \
     uuid-runtime \
@@ -47,8 +47,12 @@ RUN set -ex; \
 
 # install aws tools
 RUN set -ex; \
-  pip3 install awscli; \
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
+  unzip awscliv2.zip; \
+  ./aws/install; \
   aws --version; \
+  rm awscliv2.zip; \
+  rm -rf ./aws; \
   curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/aws-iam-authenticator; \
   chmod +x ./aws-iam-authenticator; \
   cp ./aws-iam-authenticator /usr/local/bin; \
@@ -65,11 +69,6 @@ RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
 USER $USER
 WORKDIR $HOME
 ENV PATH="$HOME/bin:/usr/local/go/bin:$HOME/go/bin:${PATH}"
-# install cfssl
-RUN set -ex; \
-  go get -v -u github.com/cloudflare/cfssl/cmd/cfssl; \
-  go get -v -u github.com/cloudflare/cfssl/cmd/cfssljson; \
-  rm -rf go/src
 
 # setup zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true

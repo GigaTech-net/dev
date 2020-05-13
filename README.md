@@ -14,12 +14,10 @@ I recommend installing:
 ## This environment includes the following utilities
 
 - [zsh](http://zsh.sourceforge.net/)
-- python3 (pip)
 - [jq](https://stedolan.github.io/jq/)
 - wget
 - curl
 - gnupg
 - uuid-runtime
 - git
-- [cloudflare ssl](https://github.com/cloudflare/cfssl)
 - [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
