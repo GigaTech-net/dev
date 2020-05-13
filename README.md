@@ -13,7 +13,7 @@ I recommend installing:
 
 ## This environment includes the following utilities
 
-- (zsh)[http://zsh.sourceforge.net/] 
+- [zsh](http://zsh.sourceforge.net/)
 - python3 (pip)
 - [jq](https://stedolan.github.io/jq/)
 - wget
