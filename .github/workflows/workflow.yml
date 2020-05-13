@@ -1,0 +1,21 @@
+name: push to dockerhub
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_push_to_dockerhub:
+    runs-on: ubuntu-latest
+    name: Docker build, tag, push
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Build, Tag, Push
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: gigatech/dev
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
