@@ -66,9 +66,18 @@ RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   rm -f go$GO_VERSION.linux-amd64.tar.gz; \
   /usr/local/go/bin/go version;
 
+ENV TERRAFORM_VERSION 0.12.24
+RUN set -ex; \
+  wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
+  unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
+  mv terraform /usr/bin; \
+  rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
+
 USER $USER
 WORKDIR $HOME
 ENV PATH="$HOME/bin:/usr/local/go/bin:$HOME/go/bin:${PATH}"
+
+# install terraform
 
 # setup zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true

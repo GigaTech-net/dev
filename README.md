@@ -9,6 +9,7 @@ I recommend installing:
 - [ohmyzsh](https://ohmyz.sh/)
 - [docker](https://www.docker.com/)
 - [aws cli (docker)](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
+- [Terraform](https://www.terraform.io/)
 - [This dev environment](https://hub.docker.com/repository/docker/gigatech/dev)
 
 ## This environment includes the following utilities
@@ -21,3 +22,5 @@ I recommend installing:
 - uuid-runtime
 - git
 - [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- [Terraform](https://www.terraform.io/)
+
