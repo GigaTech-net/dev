@@ -23,4 +23,5 @@ I recommend installing:
 - git
 - [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 - [Terraform](https://www.terraform.io/)
+- [go](https://golang.org/)
 
