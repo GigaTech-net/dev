@@ -30,6 +30,7 @@ RUN set -ex; \
     curl \
     git \
     zsh \
+    groff \
   ; \
   rm -rf /var/lib/apt/lists/*
 
@@ -60,13 +61,13 @@ RUN set -ex; \
   aws-iam-authenticator help
 
 # install go
-ENV GO_VERSION 1.14.2
+ENV GO_VERSION 1.14.5
 RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz; \
   rm -f go$GO_VERSION.linux-amd64.tar.gz; \
   /usr/local/go/bin/go version;
 
-ENV TERRAFORM_VERSION 0.12.24
+ENV TERRAFORM_VERSION 0.12.28
 RUN set -ex; \
   wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
