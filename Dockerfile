@@ -22,29 +22,29 @@ RUN set -ex; \
   apt-get update; \
   apt-get -y upgrade; \
   apt-get install -y \
-    unzip \
-    jq \
-    wget \
-    uuid-runtime \
-    gnupg2 \
-    curl \
-    git \
-    zsh \
-    groff \
+  unzip \
+  jq \
+  wget \
+  uuid-runtime \
+  gnupg2 \
+  curl \
+  git \
+  zsh \
+  groff \
   ; \
   rm -rf /var/lib/apt/lists/*
 
 RUN set -ex; \
   dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-	command -v gpgconf && gpgconf --kill all || :; \
-	rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
-	chmod +x /usr/local/bin/gosu; \
-	gosu nobody true; 
+  wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+  wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+  export GNUPGHOME="$(mktemp -d)"; \
+  gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+  gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+  command -v gpgconf && gpgconf --kill all || :; \
+  rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+  chmod +x /usr/local/bin/gosu; \
+  gosu nobody true; 
 
 # install aws tools
 RUN set -ex; \
@@ -61,13 +61,14 @@ RUN set -ex; \
   aws-iam-authenticator help
 
 # install go
-ENV GO_VERSION 1.14.5
+ENV GO_VERSION 1.14.6
 RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz; \
   rm -f go$GO_VERSION.linux-amd64.tar.gz; \
   /usr/local/go/bin/go version;
 
-ENV TERRAFORM_VERSION 0.12.28
+# install terraform
+ENV TERRAFORM_VERSION 0.12.29
 RUN set -ex; \
   wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
@@ -77,8 +78,6 @@ RUN set -ex; \
 USER $USER
 WORKDIR $HOME
 ENV PATH="$HOME/bin:/usr/local/go/bin:$HOME/go/bin:${PATH}"
-
-# install terraform
 
 # setup zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
