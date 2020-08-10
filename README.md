@@ -10,6 +10,8 @@ I recommend installing:
 - [docker](https://www.docker.com/)
 - [aws cli (docker)](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
 - [Terraform](https://www.terraform.io/)
+- [Postman](https://www.postman.com/)
+- [Serverless Framework](https://www.serverless.com/framework/docs/)
 - [This dev environment](https://hub.docker.com/repository/docker/gigatech/dev)
 
 ## This environment includes the following utilities
