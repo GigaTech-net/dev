@@ -1,6 +1,15 @@
 # GigaTECH Development environment
 A development environment for use at GigaTECH. Published to a [docker image](https://hub.docker.com/repository/docker/gigatech/dev).
 
+tag with a command like:
+
+```bash
+git tag -a 0.2.0 -m "add a test tag for version 0.2.0"
+git push origin 0.2.0
+```
+
+because the current workflow uses elgohr/Publish-Docker-Github-Action@master and the [tag_semver](https://github.com/elgohr/Publish-Docker-Github-Action#tag_semver) option.
+
 ## Base development environment
 
 I recommend installing:
@@ -26,4 +35,3 @@ I recommend installing:
 - [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 - [Terraform](https://www.terraform.io/)
 - [go](https://golang.org/)
-
