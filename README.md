@@ -1,5 +1,22 @@
 # GigaTECH Development environment
+
 A development environment for use at GigaTECH. Published to a [docker image](https://hub.docker.com/repository/docker/gigatech/dev).
+
+## using the docker container
+
+For example, run the development environment to run curl with jq.
+
+```zsh
+docker container run --rm -it -w /home/gigatech/workdir -v "$(pwd)":/home/gigatech/workdir -v "${HOME}":/home/gigatech -e "TF_LOG=ERROR" gigatech/dev:latest zsh
+```
+
+will get you a zsh prompt. Form here you can run the curl command such as:
+
+```zsh
+curl -s http://hapi.fhir.org/baseR4/Patient | jq . 
+```
+
+## Tagging the docker container
 
 tag with a command like:
 
