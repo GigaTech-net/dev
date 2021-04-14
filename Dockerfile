@@ -68,12 +68,19 @@ RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   /usr/local/go/bin/go version;
 
 # install terraform
-ENV TERRAFORM_VERSION 0.14.9
+ENV TERRAFORM_VERSION 0.15.0
 RUN set -ex; \
   wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
   mv terraform /usr/bin; \
   rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
+
+# install terragrunt
+ENV TERRAGRUNT_VERSION 0.28.21
+RUN set -ex; \
+  wget https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64; \
+  mv terragrunt_linux_amd64 /usr/bin/terragrunt; \
+  chmod a+rx /usr/bin/terragrunt;
 
 USER $USER
 WORKDIR $HOME

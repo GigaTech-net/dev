@@ -13,7 +13,7 @@ docker container run --rm -it -w /home/gigatech/workdir -v "$(pwd)":/home/gigate
 will get you a zsh prompt. Form here you can run the curl command such as:
 
 ```zsh
-curl -s http://hapi.fhir.org/baseR4/Patient | jq . 
+curl -s http://hapi.fhir.org/baseR4/Patient | jq .
 ```
 
 ## Tagging the docker container
@@ -36,6 +36,7 @@ I recommend installing:
 - [docker](https://www.docker.com/)
 - [aws cli (docker)](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
 - [Terraform](https://www.terraform.io/)
+- [Terragrunt](https://terragrunt.gruntwork.io/)
 - [Postman](https://www.postman.com/)
 - [Serverless Framework](https://www.serverless.com/framework/docs/)
 - [This dev environment](https://hub.docker.com/repository/docker/gigatech/dev)
@@ -51,4 +52,5 @@ I recommend installing:
 - git
 - [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 - [Terraform](https://www.terraform.io/)
+- [Terragrunt](https://terragrunt.gruntwork.io/)
 - [go](https://golang.org/)
