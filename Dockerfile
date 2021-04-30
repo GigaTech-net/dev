@@ -90,4 +90,8 @@ ENV PATH="$HOME/bin:/usr/local/go/bin:$HOME/go/bin:${PATH}"
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
 RUN rm .wget-hsts
 
+COPY --chown=$USER:$USER src/.zshrc $HOME/.zshrc
+RUN mkdir -p $HOME/.ssh
+COPY --chown=$USER:$USER src/ssh-config $HOME/.ssh/config
+
 CMD ["zsh"]

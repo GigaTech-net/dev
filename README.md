@@ -7,14 +7,28 @@ A development environment for use at GigaTECH. Published to a [docker image](htt
 For example, run the development environment to run curl with jq.
 
 ```zsh
-docker container run --rm -it -w /home/gigatech/workdir -v "$(pwd)":/home/gigatech/workdir -v "${HOME}":/home/gigatech -e "TF_LOG=ERROR" gigatech/dev:latest zsh
+export HOME="/Users/matthewjenks"
+export GTDEV_IMG="gigatech/dev"
+export GTDEV_VER=latest
+
+docker container run --rm -it -w /home/gigatech/workdir \
+      -v "$(pwd)":/home/gigatech/workdir \
+      -v "${HOME}/.zsh_history":/home/gigatech/.zsh_history \
+      -v "${HOME}/.terraform.d":/home/gigatech/.terraform.d \
+      -v "${HOME}/.aws":/home/gigatech/.aws \
+      -v "${HOME}/.ssh/mjgmail":/home/gigatech/.ssh/id_rsa \
+      -v "${HOME}/.ssh/mjgmail.pub":/home/gigatech/.ssh/id_rsa.pub \
+      -e "TF_LOG=${loglevel}" \
+      ${GTDEV_IMG}:${GTDEV_VER} zsh
 ```
 
-will get you a zsh prompt. Form here you can run the curl command such as:
+will get you a zsh prompt. From here you can run the curl command such as:
 
 ```zsh
 curl -s http://hapi.fhir.org/baseR4/Patient | jq .
 ```
+
+Notes: If you don't map a public and private key then that config will be ignored. This is useful for communicating with github. If you map those volumes and your key has a passcode, you will br prompted once for it when you start the container.
 
 ## Tagging the docker container
 
