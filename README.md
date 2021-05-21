@@ -13,7 +13,7 @@ export HOME="/Users/matthewjenks"
 export GTDEV_IMG="gigatech/dev"
 export GTDEV_VER=latest
 
-docker container run --rm -it -w /home/gigatech/workdir \
+docker container run --rm -w /home/gigatech/workdir \
       -v "$(pwd)":/home/gigatech/workdir \
       -v "${HOME}/.zsh_history":/home/gigatech/.zsh_history \
       -v "${HOME}/.terraform.d":/home/gigatech/.terraform.d \
@@ -65,7 +65,7 @@ because the current workflow uses elgohr/Publish-Docker-Github-Action@master and
 
 I recommend installing:
 
-- [zsh][http://zsh.sourceforge.net/]
+- [zsh](http://zsh.sourceforge.net/)
 - [ohmyzsh](https://ohmyz.sh/)
 - [docker](https://www.docker.com/)
 - [aws cli (docker)](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
