@@ -68,7 +68,7 @@ RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   /usr/local/go/bin/go version;
 
 # install terraform
-ENV TERRAFORM_VERSION 0.15.1
+ENV TERRAFORM_VERSION 0.15.4
 RUN set -ex; \
   wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
@@ -76,15 +76,45 @@ RUN set -ex; \
   rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
 
 # install terragrunt
-ENV TERRAGRUNT_VERSION 0.29.1
+ENV TERRAGRUNT_VERSION 0.29.4
 RUN set -ex; \
   wget https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64; \
   mv terragrunt_linux_amd64 /usr/bin/terragrunt; \
   chmod a+rx /usr/bin/terragrunt;
 
+# install JAVA
+ENV JAVA_MAJOR_VERSION 16
+ENV JAVA_VERSION ${JAVA_MAJOR_VERSION}.0.1
+RUN mkdir -p /usr/java/openjdk; \
+    cd /usr/java/openjdk; \
+    wget https://download.java.net/java/GA/jdk${JAVA_VERSION}/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
+    tar xvzf openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
+    rm openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz;
+
+ENV JAVA_HOME /usr/java/openjdk/jdk-${JAVA_VERSION}
+ENV PATH ${PATH}:${JAVA_HOME}/bin
+RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java" 1; \
+    update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1; \
+    update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1
+RUN java -version
+
+# install FHIR validator JAR (expanded due to bug https://chat.fhir.org/#narrow/stream/179166-implementers/topic/FHIR.20validator.20ClassNotFoundException/near/239752411)
+RUN mkdir -p /usr/java/fhirvalidator; \
+    cd /usr/java/fhirvalidator; \
+    wget https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar; \
+    jar xvf validator_cli.jar; \
+    rm validator_cli.jar
+
+ENV JAVA_CLASSPATH ${JAVA_CLASSPATH}:/usr/java/fhirvalidator
+
 USER $USER
 WORKDIR $HOME
-ENV PATH="$HOME/bin:/usr/local/go/bin:$HOME/go/bin:${PATH}"
+ENV PATH="${HOME}/bin:/usr/local/go/bin:${HOME}/go/bin:${PATH}"
+
+# install FHIR validator start script
+RUN mkdir -p bin
+COPY --chown=${USER}:${USER} bin/fhirvalidator.sh ${HOME}/bin/fhirvalidator.sh
+RUN chmod 755 ${HOME}/bin/fhirvalidator.sh
 
 # setup zsh
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
