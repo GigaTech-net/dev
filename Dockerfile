@@ -98,13 +98,12 @@ RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java"
     update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1
 RUN java -version
 
-# install FHIR validator JAR (expanded due to bug https://chat.fhir.org/#narrow/stream/179166-implementers/topic/FHIR.20validator.20ClassNotFoundException/near/239752411)
+# install FHIR validator JAR 
 RUN mkdir -p /usr/java/fhirvalidator; \
     cd /usr/java/fhirvalidator; \
-    wget https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar; \
-    jar xvf validator_cli.jar; \
-    rm validator_cli.jar
+    wget https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar;
 
+ENV FHIR_VALIDATOR_JAR /usr/java/fhirvalidator/validator_cli.jar
 ENV JAVA_CLASSPATH ${JAVA_CLASSPATH}:/usr/java/fhirvalidator
 
 USER $USER
