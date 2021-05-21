@@ -4,6 +4,26 @@ A development environment for use at GigaTECH. Published to a [docker image](htt
 
 ## using the docker container
 
+### Running the container in non interactive mode
+
+For example, run the development environment to execute the [FHIR validator](https://confluence.hl7.org/display/FHIR/Using+the+FHIR+Validator) in the current directory.
+
+```zsh
+export HOME="/Users/matthewjenks"
+export GTDEV_IMG="gigatech/dev"
+export GTDEV_VER=latest
+
+docker container run --rm -it -w /home/gigatech/workdir \
+      -v "$(pwd)":/home/gigatech/workdir \
+      -v "${HOME}/.zsh_history":/home/gigatech/.zsh_history \
+      -v "${HOME}/.terraform.d":/home/gigatech/.terraform.d \
+      -v "${HOME}/.aws":/home/gigatech/.aws \
+      -e "TF_LOG=${loglevel}" \
+      ${GTDEV_IMG}:${GTDEV_VER} fhirvalidator.sh source/Patient_QuestionnaireResponse_Example.json -transform http://my.hl7.org/Patient-StructureMap -version 4.0.1 -ig logical/ -ig map/patient-structuremap-test.json -log test.txt -output output/Patient_Example-mj.json
+```
+
+### Running the container in interactive mode
+
 For example, run the development environment to run curl with jq.
 
 ```zsh
@@ -68,3 +88,5 @@ I recommend installing:
 - [Terraform](https://www.terraform.io/)
 - [Terragrunt](https://terragrunt.gruntwork.io/)
 - [go](https://golang.org/)
+- [openjdk](http://jdk.java.net/16/)
+- [FHIR Validator](https://www.hl7.org/fhir/downloads.html)
