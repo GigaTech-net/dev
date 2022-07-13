@@ -34,12 +34,20 @@ RUN set -ex; \
   ; \
   rm -rf /var/lib/apt/lists/*
 
+# gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+
 RUN set -ex; \
   dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
   wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
   wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
   export GNUPGHOME="$(mktemp -d)"; \
-  gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+  for server in ha.pool.sks-keyservers.net \
+  hkp://p80.pool.sks-keyservers.net:80 \
+  keyserver.ubuntu.com \
+  hkp://keyserver.ubuntu.com:80 \
+  pgp.mit.edu; do \
+  gpg --keyserver "$server" --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && break || echo "Trying new server..."; \
+  done; \
   gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
   command -v gpgconf && gpgconf --kill all || :; \
   rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
@@ -86,22 +94,22 @@ RUN set -ex; \
 ENV JAVA_MAJOR_VERSION 16
 ENV JAVA_VERSION ${JAVA_MAJOR_VERSION}.0.1
 RUN mkdir -p /usr/java/openjdk; \
-    cd /usr/java/openjdk; \
-    wget https://download.java.net/java/GA/jdk${JAVA_VERSION}/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
-    tar xvzf openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
-    rm openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz;
+  cd /usr/java/openjdk; \
+  wget https://download.java.net/java/GA/jdk${JAVA_VERSION}/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
+  tar xvzf openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
+  rm openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz;
 
 ENV JAVA_HOME /usr/java/openjdk/jdk-${JAVA_VERSION}
 ENV PATH ${PATH}:${JAVA_HOME}/bin
 RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java" 1; \
-    update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1; \
-    update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1
+  update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1; \
+  update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1
 RUN java -version
 
 # install FHIR validator JAR 
 RUN mkdir -p /usr/java/fhirvalidator; \
-    cd /usr/java/fhirvalidator; \
-    wget https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar;
+  cd /usr/java/fhirvalidator; \
+  wget https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar;
 
 ENV FHIR_VALIDATOR_JAR /usr/java/fhirvalidator/validator_cli.jar
 ENV JAVA_CLASSPATH ${JAVA_CLASSPATH}:/usr/java/fhirvalidator
