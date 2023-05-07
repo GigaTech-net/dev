@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Build, Tag, Push
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: gigatech/dev
           username: ${{ secrets.DOCKER_USERNAME }}
