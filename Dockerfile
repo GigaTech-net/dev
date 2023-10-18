@@ -69,14 +69,14 @@ RUN set -ex; \
   aws-iam-authenticator help
 
 # install go
-ENV GO_VERSION 1.18
+ENV GO_VERSION 1.21
 RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz; \
   rm -f go$GO_VERSION.linux-amd64.tar.gz; \
   /usr/local/go/bin/go version;
 
 # install terraform
-ENV TERRAFORM_VERSION 1.4.6
+ENV TERRAFORM_VERSION 1.6.1
 RUN set -ex; \
   wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
@@ -84,7 +84,7 @@ RUN set -ex; \
   rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
 
 # install terragrunt
-ENV TERRAGRUNT_VERSION 0.45.9
+ENV TERRAGRUNT_VERSION 0.52.3
 RUN set -ex; \
   wget https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64; \
   mv terragrunt_linux_amd64 /usr/bin/terragrunt; \
