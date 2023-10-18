@@ -69,7 +69,7 @@ RUN set -ex; \
   aws-iam-authenticator help
 
 # install go
-ENV GO_VERSION 1.21
+ENV GO_VERSION 1.21.3
 RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz; \
   rm -f go$GO_VERSION.linux-amd64.tar.gz; \
