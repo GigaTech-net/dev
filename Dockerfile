@@ -92,7 +92,7 @@ RUN set -ex; \
   chmod a+rx /usr/bin/terragrunt;
 
 # install JAVA
-ENV JAVA_MAJOR_VERSION 21
+ENV JAVA_MAJOR_VERSION 17
 ENV JAVA_VERSION ${JAVA_MAJOR_VERSION}.0.1
 RUN mkdir -p /usr/java/openjdk; \
   cd /usr/java/openjdk; \
