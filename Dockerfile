@@ -69,14 +69,14 @@ RUN set -ex; \
   aws-iam-authenticator help
 
 # install go
-ENV GO_VERSION 1.21.3
+ENV GO_VERSION 1.21.5
 RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz; \
   rm -f go$GO_VERSION.linux-amd64.tar.gz; \
   /usr/local/go/bin/go version;
 
 # install terraform
-ENV TERRAFORM_VERSION 1.6.1
+ENV TERRAFORM_VERSION 1.6.6
 RUN set -ex; \
   wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
@@ -84,14 +84,15 @@ RUN set -ex; \
   rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
 
 # install terragrunt
-ENV TERRAGRUNT_VERSION 0.52.3
+# ENV TERRAGRUNT_VERSION 0.52.3
+ENV TERRAGRUNT_VERSION 0.54.11
 RUN set -ex; \
   wget https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64; \
   mv terragrunt_linux_amd64 /usr/bin/terragrunt; \
   chmod a+rx /usr/bin/terragrunt;
 
 # install JAVA
-ENV JAVA_MAJOR_VERSION 16
+ENV JAVA_MAJOR_VERSION 21
 ENV JAVA_VERSION ${JAVA_MAJOR_VERSION}.0.1
 RUN mkdir -p /usr/java/openjdk; \
   cd /usr/java/openjdk; \

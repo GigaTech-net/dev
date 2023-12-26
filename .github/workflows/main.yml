@@ -1,4 +1,4 @@
-name: push to dockerhub
+name: main branch build and push to dockerhub
 
 on:
   push:
@@ -13,9 +13,10 @@ jobs:
     name: Docker build, tag, push
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+
       - name: Build, Tag, Push
-        uses: elgohr/Publish-Docker-Github-Action@v4
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: gigatech/dev
           username: ${{ secrets.DOCKER_USERNAME }}
