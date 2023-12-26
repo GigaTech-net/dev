@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bookworm-slim
 LABEL maintainer="dev@gigatech.net"
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
@@ -31,10 +31,9 @@ RUN set -ex; \
   git \
   zsh \
   groff \
-  ; \
+  default-jdk \
+  apt-get clean && \
   rm -rf /var/lib/apt/lists/*
-
-# gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 
 RUN set -ex; \
   dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
@@ -92,20 +91,20 @@ RUN set -ex; \
   chmod a+rx /usr/bin/terragrunt;
 
 # install JAVA
-ENV JAVA_MAJOR_VERSION 17
-ENV JAVA_VERSION ${JAVA_MAJOR_VERSION}.0.1
-RUN mkdir -p /usr/java/openjdk; \
-  cd /usr/java/openjdk; \
-  wget https://download.java.net/java/GA/jdk${JAVA_VERSION}/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
-  tar xvzf openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
-  rm openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz;
+# ENV JAVA_MAJOR_VERSION 17
+# ENV JAVA_VERSION ${JAVA_MAJOR_VERSION}.0.1
+# RUN mkdir -p /usr/java/openjdk; \
+#   cd /usr/java/openjdk; \
+#   wget https://download.java.net/java/GA/jdk${JAVA_VERSION}/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
+#   tar xvzf openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz; \
+#   rm openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz;
 
-ENV JAVA_HOME /usr/java/openjdk/jdk-${JAVA_VERSION}
-ENV PATH ${PATH}:${JAVA_HOME}/bin
-RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java" 1; \
-  update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1; \
-  update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1
-RUN java -version
+# ENV JAVA_HOME /usr/java/openjdk/jdk-${JAVA_VERSION}
+# ENV PATH ${PATH}:${JAVA_HOME}/bin
+# RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java" 1; \
+#   update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1; \
+#   update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1
+# RUN java -version
 
 # install FHIR validator JAR 
 RUN mkdir -p /usr/java/fhirvalidator; \
