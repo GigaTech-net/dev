@@ -31,7 +31,7 @@ RUN set -ex; \
   git \
   zsh \
   groff \
-  default-jdk \
+  default-jdk && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
