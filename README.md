@@ -1,5 +1,9 @@
 # GigaTECH Development environment
 
+[![CI](https://github.com/GigaTech-net/dev/actions/workflows/main.yml/badge.svg)](https://github.com/GigaTech-net/dev/actions/workflows/main.yml)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Docker Pulls](https://img.shields.io/docker/pulls/GigaTech-net/dev?style=flat)](https://hub.docker.com/repository/docker/gigatech/dev/general)
+
 A development environment for use at GigaTECH. Published to a [docker image](https://hub.docker.com/repository/docker/gigatech/dev).
 
 ## using the docker container
