@@ -8,6 +8,9 @@ on:
       - '**'
 
 jobs:
+  call-trufflehog-scan:
+    uses: GigaTech-net/reusable-workflows/.github/workflows/rw-trufflehog-scan.yaml@main
+
   build_push_to_dockerhub:
     runs-on: ubuntu-latest
     name: Docker build, tag, push
