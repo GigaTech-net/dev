@@ -1,3 +1,4 @@
+# hadolint global ignore=SC2015,DL4001
 FROM debian:bookworm-slim
 LABEL maintainer="dev@gigatech.net"
 
