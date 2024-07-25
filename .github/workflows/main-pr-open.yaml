@@ -6,6 +6,7 @@ on:
     types: [opened, synchronize, reopened, edited]
     branches:
       - main
+      - master
 
 env:
   NEEDS_REVIEW_LABEL: "needs-human-review"
