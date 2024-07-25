@@ -1,4 +1,4 @@
-# hadolint global ignore=SC2015,DL4001,DL3047,DL3015,DL4006,DL3003,SC2164
+# hadolint global ignore=SC2015,DL4001,DL3047,DL3015,DL4006,DL3003,SC2164,DL3008
 FROM debian:bookworm-slim
 LABEL maintainer="dev@gigatech.net"
 
@@ -24,16 +24,16 @@ RUN set -ex; \
   apt-get update; \
   apt-get -y upgrade; \
   apt-get install -y \
-  unzip=6.0.28 \
-  jq=1.6.2-1 \
-  wget=1.21.3-1+b2 \
-  uuid-runtime=2.38.1-5+b1 \
-  gnupg2=2.2.40-1.1 \
-  curl=7.88.1-10+deb12u5 \
-  git=1:2.39.2-1.1 \
-  zsh=5.9-4+b2 \
-  groff=1.22.4-10 \
-  default-jdk=2:1.17-74 && \
+  unzip \
+  jq \
+  wget \
+  uuid-runtime \
+  gnupg2 \
+  curl \
+  git \
+  zsh \
+  groff \
+  default-jdk && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
