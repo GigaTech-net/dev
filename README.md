@@ -46,13 +46,13 @@ docker container run --rm -it -w /home/gigatech/workdir \
       ${GTDEV_IMG}:${GTDEV_VER} zsh
 ```
 
-will get you a zsh prompt. From here you can run the curl command such as:
+will get you a Zsh prompt. From here you can run the curl command such as:
 
 ```zsh
 curl -s http://hapi.fhir.org/baseR4/Patient | jq .
 ```
 
-Notes: If you don't map a public and private key then that config will be ignored. This is useful for communicating with github. If you map those volumes and your key has a passcode, you will br prompted once for it when you start the container.
+Notes: If you don't map a public and private key then that config will be ignored. This is useful for communicating with GitHub. If you map those volumes and your key has a passcode, you will br prompted once for it when you start the container.
 
 ## Tagging the docker container
 
@@ -69,7 +69,7 @@ because the current workflow uses elgohr/Publish-Docker-Github-Action@master and
 
 I recommend installing:
 
-- [zsh](http://zsh.sourceforge.net/)
+- [Zsh](http://zsh.sourceforge.net/)
 - [ohmyzsh](https://ohmyz.sh/)
 - [docker](https://www.docker.com/)
 - [aws cli (docker)](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
@@ -81,13 +81,13 @@ I recommend installing:
 
 ## This environment includes the following utilities
 
-- [zsh](http://zsh.sourceforge.net/)
+- [Zsh](http://zsh.sourceforge.net/)
 - [jq](https://stedolan.github.io/jq/)
 - wget
 - curl
 - gnupg
 - uuid-runtime
-- git
+- Git
 - [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 - [Terraform](https://www.terraform.io/)
 - [Terragrunt](https://terragrunt.gruntwork.io/)
