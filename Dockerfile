@@ -1,3 +1,4 @@
+# hadolint global ignore=SC2015,DL4001,DL3047,DL3015,DL4006,DL3003,SC2164,DL3008
 FROM debian:bookworm-slim
 LABEL maintainer="dev@gigatech.net"
 
@@ -10,6 +11,7 @@ RUN set -ex; \
 
 # install tini to handle signal processing
 ENV TINI_VERSION v0.19.0
+# checkov:skip=CKV_DOCKER_4: USe add for URL as COPY wont work
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
@@ -116,3 +118,4 @@ RUN mkdir -p $HOME/.ssh
 COPY --chown=$USER:$USER src/ssh-config $HOME/.ssh/config
 
 CMD ["zsh"]
+# checkov:skip=CKV_DOCKER_2: Healthcheck not needed for this image
