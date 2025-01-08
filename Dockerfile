@@ -18,7 +18,7 @@ ENTRYPOINT ["/tini", "--"]
 
 # install base tools
 # grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
-ENV GOSU_VERSION 1.14
+ENV GOSU_VERSION 1.17
 RUN set -ex; \
   \
   apt-get update; \
@@ -70,14 +70,14 @@ RUN set -ex; \
   aws-iam-authenticator help
 
 # install go
-ENV GO_VERSION 1.21.5
+ENV GO_VERSION 1.23.4
 RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
   tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz; \
   rm -f go$GO_VERSION.linux-amd64.tar.gz; \
   /usr/local/go/bin/go version;
 
 # install terraform
-ENV TERRAFORM_VERSION 1.6.6
+ENV TERRAFORM_VERSION 1.10.3
 RUN set -ex; \
   wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
@@ -85,8 +85,7 @@ RUN set -ex; \
   rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
 
 # install terragrunt
-# ENV TERRAGRUNT_VERSION 0.52.3
-ENV TERRAGRUNT_VERSION 0.54.11
+ENV TERRAGRUNT_VERSION 0.71.2
 RUN set -ex; \
   wget https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64; \
   mv terragrunt_linux_amd64 /usr/bin/terragrunt; \
