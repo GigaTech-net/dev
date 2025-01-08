@@ -13,7 +13,6 @@ ENV AWSCLI_VERSION=2.19.1
 ENV AWS_IAM_AUTHENTICATOR_VERSION=0.6.29
 ENV GOSU_VERSION 1.17
 ENV TGT_OS=linux
-ENV TGT_ARCH=arm64
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 ENV USER gigatech
@@ -38,6 +37,11 @@ RUN apt-get update && \
 
 # Install Terraform
 RUN set -ex; \
+    case "$(uname -m)" in \
+        x86_64) export TGT_ARCH="amd64" ;; \
+        aarch64) export TGT_ARCH="arm64" ;; \
+        *) echo "Unsupported architecture"; exit 1 ;; \
+    esac && \
     wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_${TGT_OS}_${TGT_ARCH}.zip; \
     unzip terraform_${TERRAFORM_VERSION}_${TGT_OS}_${TGT_ARCH}.zip; \
     mv terraform /usr/bin; \
@@ -47,7 +51,12 @@ RUN set -ex; \
 RUN terraform --version
 
 # Install Terragrunt
-RUN wget -O /usr/local/bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_${TGT_OS}_${TGT_ARCH} && \
+RUN case "$(uname -m)" in \
+        x86_64) export TGT_ARCH="amd64" ;; \
+        aarch64) export TGT_ARCH="arm64" ;; \
+        *) echo "Unsupported architecture"; exit 1 ;; \
+    esac && \
+    wget -O /usr/local/bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_${TGT_OS}_${TGT_ARCH} && \
     chmod +x /usr/local/bin/terragrunt
 
 # Verify Terragrunt
@@ -63,7 +72,12 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "aws
 RUN aws help
 
 # Install AWS IAM Authenticator
-RUN curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v${AWS_IAM_AUTHENTICATOR_VERSION}/aws-iam-authenticator_${AWS_IAM_AUTHENTICATOR_VERSION}_${TGT_OS}_${TGT_ARCH} && \
+RUN case "$(uname -m)" in \
+        x86_64) export TGT_ARCH="amd64" ;; \
+        aarch64) export TGT_ARCH="arm64" ;; \
+        *) echo "Unsupported architecture"; exit 1 ;; \
+        esac && \
+    curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v${AWS_IAM_AUTHENTICATOR_VERSION}/aws-iam-authenticator_${AWS_IAM_AUTHENTICATOR_VERSION}_${TGT_OS}_${TGT_ARCH} && \
     chmod +x aws-iam-authenticator && \
     mv aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
 
