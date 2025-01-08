@@ -71,6 +71,19 @@ jobs:
     with:
       retentionDays: 3
 
+  report-code-quality-metric:
+    name: Report Code Quality Metric
+    needs: [lint, secret-scan, spellcheck]
+    if: always()
+    permissions: read-all
+    uses: GigaTech-net/reusable-workflows/.github/workflows/rw-metric-quality-gate.yaml@main
+    secrets: inherit
+    with:
+        lintStatus: ${{ needs.lint.result }}
+        secretScanStatus: ${{ needs.secret-scan.result }}
+        spellcheckStatus: ${{ needs.spellcheck.result }}
+        sourceId: "ari:cloud:compass:c5f85481-25ba-4ff0-afac-a4bc0082db80:metric-source/0938370a-36b8-4157-8b2d-4cd87e26cf36/4ac547b0-1da9-4889-a3c5-64911f46f3f6"
+  
   build:
     name: Build
     needs: [setup, spellcheck, lint]
