@@ -1,6 +1,19 @@
 # hadolint global ignore=SC2015,DL4001,DL3047,DL3015,DL4006,DL3003,SC2164,DL3008
+# Use the latest Debian Slim image as the base
 FROM debian:bookworm-slim
 LABEL maintainer="dev@gigatech.net"
+
+# Set environment variables to non-interactive to avoid prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Define versions for the tools to be installed
+ENV TERRAFORM_VERSION=1.10.3
+ENV TERRAGRUNT_VERSION=0.71.2
+ENV AWSCLI_VERSION=2.19.1
+ENV AWS_IAM_AUTHENTICATOR_VERSION=0.6.29
+ENV GOSU_VERSION 1.17
+ENV TGT_OS=linux
+ENV TGT_ARCH=arm64
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 ENV USER gigatech
@@ -9,87 +22,83 @@ RUN set -ex; \
   groupadd -r $USER; \
   useradd -m -d $HOME -r -g $USER $USER;
 
-# install tini to handle signal processing
-ENV TINI_VERSION v0.19.0
-# checkov:skip=CKV_DOCKER_4: USe add for URL as COPY wont work
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
+# Update package list and install common web tools and dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        wget \
+        jq \
+        unzip \
+        gnupg \
+        lsb-release \
+        ca-certificates \
+        groff \
+        zsh && \
+    rm -rf /var/lib/apt/lists/*
 
-# install base tools
-# grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
-ENV GOSU_VERSION 1.17
+# Install Terraform
 RUN set -ex; \
-  \
+    wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_${TGT_OS}_${TGT_ARCH}.zip; \
+    unzip terraform_${TERRAFORM_VERSION}_${TGT_OS}_${TGT_ARCH}.zip; \
+    mv terraform /usr/bin; \
+    rm terraform_${TERRAFORM_VERSION}_${TGT_OS}_${TGT_ARCH}.zip;
+
+# Verify Terraform
+RUN terraform --version
+
+# Install Terragrunt
+RUN wget -O /usr/local/bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_${TGT_OS}_${TGT_ARCH} && \
+    chmod +x /usr/local/bin/terragrunt
+
+# Verify Terragrunt
+RUN terragrunt --version
+
+# Install AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -rf awscliv2.zip aws/
+
+# Verify AWS cli
+RUN aws help
+
+# Install AWS IAM Authenticator
+RUN curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v${AWS_IAM_AUTHENTICATOR_VERSION}/aws-iam-authenticator_${AWS_IAM_AUTHENTICATOR_VERSION}_${TGT_OS}_${TGT_ARCH} && \
+    chmod +x aws-iam-authenticator && \
+    mv aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+
+# Verify AWS IAM Authenticator
+RUN aws-iam-authenticator version
+
+# Install gosu
+RUN set -eux; \
+  # save list of currently installed packages for later so we can clean up
+  savedAptMark="$(apt-mark showmanual)"; \
   apt-get update; \
-  apt-get -y upgrade; \
-  apt-get install -y \
-  unzip \
-  jq \
-  wget \
-  uuid-runtime \
-  gnupg2 \
-  curl \
-  git \
-  zsh \
-  groff \
-  default-jdk && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/*
-
-RUN set -ex; \
+  apt-get install -y --no-install-recommends ca-certificates gnupg wget; \
+  rm -rf /var/lib/apt/lists/*; \
+  \
   dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
   wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
   wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+  \
+  # verify the signature
   export GNUPGHOME="$(mktemp -d)"; \
-  for server in ha.pool.sks-keyservers.net \
-  hkp://p80.pool.sks-keyservers.net:80 \
-  keyserver.ubuntu.com \
-  hkp://keyserver.ubuntu.com:80 \
-  pgp.mit.edu; do \
-  gpg --keyserver "$server" --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && break || echo "Trying new server..."; \
-  done; \
+  gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
   gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-  command -v gpgconf && gpgconf --kill all || :; \
-  rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
-  chmod +x /usr/local/bin/gosu; \
-  gosu nobody true; 
+  gpgconf --kill all; \
+  rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+  \
+  # clean up fetch dependencies
+  apt-mark auto '.*' > /dev/null; \
+  [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+  apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+  \
+  chmod +x /usr/local/bin/gosu;
 
-# install aws tools
-RUN set -ex; \
-  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
-  unzip awscliv2.zip; \
-  ./aws/install; \
-  aws --version; \
-  rm awscliv2.zip; \
-  rm -rf ./aws; \
-  curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/aws-iam-authenticator; \
-  chmod +x ./aws-iam-authenticator; \
-  cp ./aws-iam-authenticator /usr/local/bin; \
-  rm -f aws-iam-authenticator; \
-  aws-iam-authenticator help
-
-# install go
-ENV GO_VERSION 1.23.4
-RUN wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz; \
-  tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz; \
-  rm -f go$GO_VERSION.linux-amd64.tar.gz; \
-  /usr/local/go/bin/go version;
-
-# install terraform
-ENV TERRAFORM_VERSION 1.10.3
-RUN set -ex; \
-  wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
-  unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; \
-  mv terraform /usr/bin; \
-  rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
-
-# install terragrunt
-ENV TERRAGRUNT_VERSION 0.71.2
-RUN set -ex; \
-  wget https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64; \
-  mv terragrunt_linux_amd64 /usr/bin/terragrunt; \
-  chmod a+rx /usr/bin/terragrunt;
+# verify that the binary works
+RUN gosu --version; \
+    gosu nobody true
 
 # install FHIR validator JAR 
 RUN mkdir -p /usr/java/fhirvalidator; \
@@ -98,6 +107,9 @@ RUN mkdir -p /usr/java/fhirvalidator; \
 
 ENV FHIR_VALIDATOR_JAR /usr/java/fhirvalidator/validator_cli.jar
 ENV JAVA_CLASSPATH ${JAVA_CLASSPATH}:/usr/java/fhirvalidator
+
+# Set Zsh as the default shell for the root user
+RUN chsh -s /bin/zsh root
 
 USER $USER
 WORKDIR $HOME
@@ -116,5 +128,9 @@ COPY --chown=$USER:$USER src/.zshrc $HOME/.zshrc
 RUN mkdir -p $HOME/.ssh
 COPY --chown=$USER:$USER src/ssh-config $HOME/.ssh/config
 
+# Set the entrypoint to Zsh for interactive access
+ENTRYPOINT ["/bin/zsh"]
+
+# Default command to run in interactive mode
 CMD ["zsh"]
 # checkov:skip=CKV_DOCKER_2: Healthcheck not needed for this image

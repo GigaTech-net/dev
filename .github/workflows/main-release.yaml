@@ -93,6 +93,7 @@ jobs:
   build-deploy:
     name: Build and deploy
     needs: [setup, spellcheck, lint]
+    environment: production
     permissions:
       contents: read
       statuses: write
