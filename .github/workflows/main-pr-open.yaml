@@ -81,6 +81,7 @@ jobs:
     uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-complexity.yaml@main
     with:
       needsReviewLabel: ${{ needs.checkout.outputs.NEEDS_REVIEW_LABEL }}
+      tgtBranch: 'origin/master'
     secrets: inherit
 
   human-review:
