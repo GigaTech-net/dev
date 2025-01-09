@@ -1,4 +1,11 @@
 version: 2
+# Allow Dependabot access to private reusable-workflows repo
+registries:
+  github:
+    type: git
+    url: https://github.com
+    username: x-access-token
+    password: ${{ secrets.GT_DEVSECOPS_PAT }} # dependabot secret
 updates:
   # Enable version updates for npm
   - package-ecosystem: "npm"
@@ -10,6 +17,7 @@ updates:
     target-branch: "development"
     open-pull-requests-limit: 10
     versioning-strategy: "lockfile-only"
+    registries: "*"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
@@ -20,6 +28,7 @@ updates:
       interval: "weekly"
     target-branch: "development"
     open-pull-requests-limit: 10
+    registries: "*"
 
   # Enable version updates for github actions
   - package-ecosystem: "github-actions"
@@ -28,3 +37,4 @@ updates:
       interval: "weekly"
     target-branch: "development"
     open-pull-requests-limit: 10
+    registries: "*"

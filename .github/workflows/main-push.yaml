@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - master
 
 permissions:
   actions: read
@@ -46,7 +47,7 @@ jobs:
       devops-only: false
       ### A regex to exclude files from linting
       ### defaults to empty
-      filter-regex-exclude: "[src|.github]/**"
+      filter-regex-exclude: ".*[src|(github)]\\/.*"
 
   secret-scan:
     name: Secret Scan
@@ -75,7 +76,7 @@ jobs:
           fetch-depth: 0
 
       - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.70.0 # Don't use @master or @v1 unless you're happy to test the latest version
+        uses: anothrNick/github-tag-action@1.71.0 # Don't use @master or @v1 unless you're happy to test the latest version
         env:
           GITHUB_TOKEN: ${{ secrets.GT_DEVSECOPS_PAT }}
           WITH_V: true
