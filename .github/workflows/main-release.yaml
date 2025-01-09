@@ -81,7 +81,7 @@ jobs:
     needs: [lint, secret-scan, spellcheck, dependency-check]
     if: always()
     permissions: read-all
-    uses: GigaTech-net/reusable-workflows/.github/workflows/rw-metric-quality-gate.yaml@main
+    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-metric-quality-gate.yaml@main
     secrets: inherit
     with:
         lintStatus: ${{ needs.lint.result }}
