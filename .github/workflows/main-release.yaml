@@ -22,9 +22,8 @@ permissions:
   statuses: write  
 
 env:
-  IMAGE_REPOSITORY: cds
-  ECS_SERVICE_NAME: cds-prod-ecs-svc-name
-  ECS_CLUSTER_NAME: prometheus-cluster-prod
+  IMAGE_REPOSITORY: dev
+  IMAGE_REGISTRY: gigatech
 
 jobs:
   setup:
@@ -116,7 +115,7 @@ jobs:
             if [ "$GA" == "dependabot[bot]" ]; then
               ECR_REGISTRY="BOT-ACCOUNT.dkr.ecr.BOT-REGION.amazonaws.com"
             else
-              ECR_REGISTRY="gigatech"
+              ECR_REGISTRY="${{ env.IMAGE_REGISTRY }}"
             fi 
             docker build -t "$ECR_REGISTRY/${{ env.IMAGE_REPOSITORY }}":"$IMAGE_TAG" .
             {
