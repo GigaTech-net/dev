@@ -46,11 +46,8 @@ jobs:
     uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-super-linter.yaml@main
     with:
       ### For a DevOps-focused repository. Prevents some code-language linters from running
-      ### defaults to false
-      ### temporarily set this to bypass ts lint
       devops-only: false
       ### A regex to exclude files from linting
-      ### defaults to empty
       filter-regex-exclude: ".*[src|(github)]\\/.*"
 
   secret-scan:
