@@ -8,9 +8,9 @@ fields:
   lifecycle: Active
   tier: 1
 links:
-  - name: GigaTech-net/terragrunt-infrastructure-live
+  - name: GigaTech-net/dev
     type: REPOSITORY
-    url: 'https://github.com/GigaTech-net/terragrunt-infrastructure-live'
+    url: 'https://github.com/GigaTech-net/dev'
   - name: Prometheus
     type: PROJECT
     url: 'https://gigatech-net.atlassian.net/browse/PRO'
