@@ -5,7 +5,7 @@ registries:
     type: git
     url: https://github.com
     username: x-access-token
-    password: ${{ secrets.GT_DEVSECOPS_PAT }} # dependabot secret
+    password: ${{ secrets.GT_DEPENDABOT_PAT }} # dependabot secret
 updates:
   # Enable version updates for npm
   - package-ecosystem: "npm"
