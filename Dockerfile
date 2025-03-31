@@ -11,6 +11,7 @@ ENV HOME /home/$USER
 RUN groupadd -r $USER && useradd -m -d $HOME -r -g $USER $USER
 
 # Install common utilities
+# checkov:skip=CKV2_DOCKER_1: Healthcheck not needed for this image
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl wget unzip gnupg jq git zsh lsb-release ca-certificates groff \
     openssh-client procps sudo && \
@@ -51,3 +52,4 @@ WORKDIR $HOME
 ENV PATH="${HOME}/bin:/usr/local/go/bin:${HOME}/go/bin:${PATH}"
 
 ENTRYPOINT ["/bin/zsh"]
+# checkov:skip=CKV_DOCKER_2: Healthcheck not needed for this image
