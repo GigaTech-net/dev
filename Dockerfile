@@ -43,7 +43,7 @@ RUN chmod 755 ${HOME}/bin/fhirvalidator.sh
 # Setup ssh-config and optional ssh-agent script
 COPY --chown=$USER:$USER src/.zshrc $HOME/.zshrc
 COPY --chown=$USER:$USER src/ssh-config $HOME/.ssh/config
-COPY start-agent.sh /etc/profile.d/start-agent.sh
+COPY bin/start-agent.sh /etc/profile.d/start-agent.sh
 RUN chmod +x /etc/profile.d/start-agent.sh
 
 USER $USER
