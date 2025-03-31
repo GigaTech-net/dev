@@ -149,6 +149,4 @@ COPY --chown=$USER:$USER src/ssh-config $HOME/.ssh/config
 # Set the entrypoint to Zsh for interactive access
 ENTRYPOINT ["/bin/zsh"]
 
-# Default command to run in interactive mode
-CMD ["zsh"]
 # checkov:skip=CKV_DOCKER_2: Healthcheck not needed for this image
