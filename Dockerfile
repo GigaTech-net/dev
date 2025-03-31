@@ -27,7 +27,7 @@ RUN chsh -s /bin/zsh root && chsh -s /bin/zsh $USER
 
 # Add tools dynamically using a script
 COPY bin/install-tools.sh /usr/local/bin/install-tools.sh
-RUN chmod +x /usr/local/bin/install-tools.sh && /usr/local/bin/install-tools.sh
+RUN chmod +x /usr/local/bin/install-tools.sh && bash -x /usr/local/bin/install-tools.sh
 
 # Install FHIR validator
 RUN mkdir -p /usr/java/fhirvalidator && \
