@@ -33,7 +33,8 @@ RUN apt-get update && \
         ca-certificates \
         groff \
         zsh \
-        git && \
+        git \
+        openssh-client && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Terraform
