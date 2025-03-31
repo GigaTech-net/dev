@@ -32,7 +32,8 @@ RUN apt-get update && \
         lsb-release \
         ca-certificates \
         groff \
-        zsh && \
+        zsh \
+        git && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Terraform
@@ -135,8 +136,11 @@ COPY --chown=${USER}:${USER} bin/fhirvalidator.sh ${HOME}/bin/fhirvalidator.sh
 RUN chmod 755 ${HOME}/bin/fhirvalidator.sh
 
 # setup zsh
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
-RUN rm .wget-hsts
+# setup zsh (use git instead of piping script to zsh)
+RUN git clone https://github.com/ohmyzsh/ohmyzsh.git $HOME/.oh-my-zsh && \
+    cp $HOME/.oh-my-zsh/templates/zshrc.zsh-template $HOME/.zshrc && \
+    chown -R $USER:$USER $HOME/.oh-my-zsh $HOME/.zshrc
+
 
 COPY --chown=$USER:$USER src/.zshrc $HOME/.zshrc
 RUN mkdir -p $HOME/.ssh
