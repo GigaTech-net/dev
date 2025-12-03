@@ -94,7 +94,7 @@ jobs:
           oss_index_api_token: ${{ secrets.SONATYPE_OSS_INDEX_API_TOKEN }}
 
   tag:
-    needs: [setup, lint, secret-scan, spellcheck]
+    needs: [quality-checks]
     runs-on: ubuntu-latest
     permissions:
       contents: write
