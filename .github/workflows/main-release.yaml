@@ -31,72 +31,59 @@ env:
   RETENTION_DAYS: 1
 
 jobs:
-  setup:
-    name: Setup
-    permissions: read-all
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-setup.yaml@main
-
-  checkout:
+  quality-checks:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+    outputs:
+      current-version: ${{ steps.setup.outputs.current-version }}
+      current-v-version: ${{ steps.setup.outputs.current-v-version }}
+      version: ${{ steps.setup.outputs.version }}
+      v-version: ${{ steps.setup.outputs.v-version }}
+      pre-release-label: ${{ steps.setup.outputs.pre-release-label }}
+      branch: ${{ steps.setup.outputs.branch }}
+      NEEDS_REVIEW_LABEL: ${{ env.NEEDS_REVIEW_LABEL }}
     steps:
+      - name: Setup GitHub token
+        uses: GigaTech-net/public-reusable-workflows/.github/actions/setup-token@main
+        with:
+          app_id: ${{ secrets.KEYROTATION_APPID_GT_GH }}
+          private_key: ${{ secrets.KEYROTATION_PVTKEY_GT_GH }}
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+      # Combined setup, checkout, version detection, and branch extraction
+      - name: Setup workflow environment
+        id: setup
+        uses: >-
+          GigaTech-net/public-reusable-workflows/.github/actions/setup-workflow@main
 
-  lint:
-    name: Lint Code Base
-    needs: [setup, checkout]
-    permissions:
-      contents: read
-      statuses: write
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-super-linter.yaml@main
-    with:
-      ### For a DevOps-focused repository. Prevents some code-language linters from running
-      ### defaults to false
-      ### temporarily set this to bypass ts lint
-      devops-only: false
-      ### A regex to exclude files from linting
-      ### defaults to empty
-      filter-regex-exclude: ".*[src|(github)]\\/.*"
+      # Secret scan using composite action
+      - name: Secret scan
+        uses: >-
+          GigaTech-net/public-reusable-workflows/.github/actions/secret-scan@main
 
-  secret-scan:
-    name: Secret Scan
-    needs: [setup, checkout]
-    permissions: read-all
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-secret-scan.yaml@main
+      # Spellcheck using composite action
+      - name: Spellcheck
+        uses: >-
+          GigaTech-net/public-reusable-workflows/.github/actions/spellcheck@main
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          filesToIgnore: "package-lock.json,./.vscode,./.github"
 
-  spellcheck:
-    name: Spellcheck codebase
-    needs: [setup, checkout]
-    permissions:
-      contents: write
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-spellcheck.yaml@main
-
-  dependency-check:
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-dependency-check.yaml@main
-    needs: [setup]
-    permissions: read-all
-    with:
-      retentionDays: 7
-
-  report-code-quality-metric:
-    name: Report Code Quality Metric
-    needs: [lint, secret-scan, spellcheck, dependency-check]
-    if: always()
-    permissions: read-all
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-metric-quality-gate.yaml@main
-    secrets: inherit
-    with:
-      lintStatus: ${{ needs.lint.result }}
-      secretScanStatus: ${{ needs.secret-scan.result }}
-      spellcheckStatus: ${{ needs.spellcheck.result }}
-      dependencyStatus: ${{ needs.dependency-check.result }}
-      sourceId: "ari:cloud:compass:c5f85481-25ba-4ff0-afac-a4bc0082db80:metric-source/0938370a-36b8-4157-8b2d-4cd87e26cf36/4ac547b0-1da9-4889-a3c5-64911f46f3f6"
+      # Super Linter using composite action
+      - name: Super Linter
+        uses: GigaTech-net/public-reusable-workflows/.github/actions/super-linter@main
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          run_local: false
 
   build-deploy:
     name: Build and deploy
-    needs: [setup, spellcheck, lint]
+    needs: [quality-checks]
     environment: production
     permissions:
       contents: read
