@@ -10,6 +10,8 @@ on:
 
 env:
   NEEDS_REVIEW_LABEL: "needs-human-review"
+  ARTIFACT_NAME: "vulnerability_rpt"
+  RETENTION_DAYS: 1
 
 permissions:
   actions: read
@@ -23,7 +25,7 @@ permissions:
   pull-requests: write
   repository-projects: read
   security-events: read
-  statuses: write  
+  statuses: write
 
 # cancel any previously-started, yet still active runs of this workflow on the same branch
 concurrency:
@@ -31,71 +33,92 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    name: Setup
-    permissions: read-all
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-setup.yaml@main
-
-  checkout:
+  quality-checks:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
     outputs:
+      current-version: ${{ steps.setup.outputs.current-version }}
+      current-v-version: ${{ steps.setup.outputs.current-v-version }}
+      version: ${{ steps.setup.outputs.version }}
+      v-version: ${{ steps.setup.outputs.v-version }}
+      pre-release-label: ${{ steps.setup.outputs.pre-release-label }}
+      branch: ${{ steps.setup.outputs.branch }}
       NEEDS_REVIEW_LABEL: ${{ env.NEEDS_REVIEW_LABEL }}
     steps:
+      - name: Setup GitHub token
+        uses: GigaTech-net/public-reusable-workflows/.github/actions/setup-token@main
+        with:
+          app_id: ${{ secrets.KEYROTATION_APPID_GT_GH }}
+          private_key: ${{ secrets.KEYROTATION_PVTKEY_GT_GH }}
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+      # Combined setup, checkout, version detection, and branch extraction
+      - name: Setup workflow environment
+        id: setup
+        uses: >-
+          GigaTech-net/public-reusable-workflows/.github/actions/setup-workflow@main
 
-  lint:
-    name: Lint Code Base
-    needs: [setup, checkout]
-    permissions:
-      contents: read
-      statuses: write
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-super-linter.yaml@main
-    with:
-      ### For a DevOps-focused repository. Prevents some code-language linters from running
-      ### defaults to false
-      ### temporarily set this to bypass ts lint
-      devops-only: false
-      ### A regex to exclude files from linting
-      ### defaults to empty
-      filter-regex-exclude: ".*[src|(github)]\\/.*"
+      # Validate PR title using composite action
+      - name: Validate PR title
+        uses: >-
+          GigaTech-net/public-reusable-workflows/.github/actions/validate-pr-title@main
 
-  secret-scan:
-    name: Secret Scan
-    needs: [setup, checkout]
-    permissions: read-all
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-secret-scan.yaml@main
+      # Secret scan using composite action
+      - name: Secret scan
+        uses: >-
+          GigaTech-net/public-reusable-workflows/.github/actions/secret-scan@main
 
-  spellcheck:
-    name: Spellcheck codebase
-    needs: [setup, checkout]
-    permissions:
-      contents: write
-    uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-spellcheck.yaml@main
+      # Spellcheck using composite action
+      - name: Spellcheck
+        uses: >-
+          GigaTech-net/public-reusable-workflows/.github/actions/spellcheck@main
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          filesToIgnore: "package-lock.json,./.vscode,./.github"
+
+      # Super Linter using composite action
+      - name: Super Linter
+        uses: GigaTech-net/public-reusable-workflows/.github/actions/super-linter@main
+        with:
+          github_token: ${{ env.GITHUB_TOKEN }}
+          run_local: false
+
+      - name: dependency check
+        uses: GigaTech-net/public-reusable-workflows/.github/actions/dependency-check@main
+        id: dependency-check
+        with:
+          artifact_name: ${{ env.ARTIFACT_NAME }}-${{ github.sha }}
+          retention_days: ${{ env.RETENTION_DAYS }}
+          working_directory: "."
+          oss_index_user: ${{ secrets.SONATYPE_OSS_INDEX_USER }}
+          oss_index_api_token: ${{ secrets.SONATYPE_OSS_INDEX_API_TOKEN }}
 
   complexity:
     name: Check Complexity
-    needs: [setup, checkout]
+    needs: [quality-checks]
     uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-complexity.yaml@main
     with:
-      needsReviewLabel: ${{ needs.checkout.outputs.NEEDS_REVIEW_LABEL }}
-      tgtBranch: 'origin/master'
+      needsReviewLabel: ${{ needs.quality-checks.outputs.NEEDS_REVIEW_LABEL }}
+      tgtBranch: "origin/master"
     secrets: inherit
 
   human-review:
     name: Check if human review is needed
-    needs: [checkout, complexity]
+    needs: [quality-checks, complexity]
     permissions: read-all
     uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-checkreview.yaml@main
     with:
-      needsReviewLabel: ${{ needs.checkout.outputs.NEEDS_REVIEW_LABEL }}
+      needsReviewLabel: ${{ needs.quality-checks.outputs.NEEDS_REVIEW_LABEL }}
     secrets: inherit
 
   enable-auto-merge:
     name: Enable Auto Merge
-    needs: [setup]
+    needs: [quality-checks]
     runs-on: ubuntu-latest
     steps:
       - name: set to auto merge if human review is not needed (not dependabot)
@@ -120,10 +143,10 @@ jobs:
 
   auto-approve:
     name: Auto approve PR
-    needs: [human-review, enable-auto-merge, lint, secret-scan, spellcheck]
+    needs: [human-review, enable-auto-merge]
     runs-on: ubuntu-latest
     if: needs.human-review.outputs.human_review_needed == 'false'
-    steps:  
+    steps:
       - name: Approve the PR if human review not needed
         run: gh pr review --approve "$PR_URL"
         env:

@@ -1,0 +1,13 @@
+# Trivy configuration for GitHub Super Linter
+# Exclude development dependencies from vulnerability scanning
+# since they don't affect production builds
+
+# Ignore webpack-dev-server vulnerabilities (dev-only dependencies)
+vulnerability:
+  ignore:
+    - CVE-2025-30359 # webpack-dev-server information exposure
+    - CVE-2025-30360 # webpack-dev-server information exposure
+
+# Only scan production dependencies
+dependency:
+  skip-dev: true

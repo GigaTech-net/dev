@@ -4,9 +4,9 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Docker Pulls](https://img.shields.io/docker/pulls/gigatech/dev?style=flat)](https://hub.docker.com/repository/docker/gigatech/dev/general)
 
-A development environment for use at GigaTECH. Published to a [docker image](https://hub.docker.com/repository/docker/gigatech/dev/general).
+A development environment for use at GigaTECH. Published to a [Docker image](https://hub.docker.com/repository/docker/gigatech/dev/general).
 
-## using the docker container
+## Using the Docker container
 
 ### Running the container in non interactive mode
 
@@ -28,7 +28,7 @@ docker container run --rm -w /home/gigatech/workdir \
 
 ### Running the container in interactive mode
 
-For example, run the development environment to run curl with jq.
+For example, run the development environment to run cURL with jq.
 
 ```zsh
 export HOME="/Users/matthewjenks"
@@ -46,7 +46,7 @@ docker container run --rm -it -w /home/gigatech/workdir \
       ${GTDEV_IMG}:${GTDEV_VER} zsh
 ```
 
-will get you a Zsh prompt. From here you can run the curl command such as:
+will get you a Zsh prompt. From here you can run the cURL command such as:
 
 ```zsh
 curl -s http://hapi.fhir.org/baseR4/Patient | jq .
@@ -54,7 +54,7 @@ curl -s http://hapi.fhir.org/baseR4/Patient | jq .
 
 Notes: If you don't map a public and private key then that config will be ignored. This is useful for communicating with GitHub. If you map those volumes and your key has a passcode, you will br prompted once for it when you start the container.
 
-## Tagging the docker container
+## Tagging the Docker container
 
 tag with a command like:
 
@@ -71,8 +71,8 @@ I recommend installing:
 
 - [Zsh](http://zsh.sourceforge.net/)
 - [ohmyzsh](https://ohmyz.sh/)
-- [docker](https://www.docker.com/)
-- [aws cli (docker)](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
+- [Docker](https://www.docker.com/)
+- [aws cli (Docker)](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
 - [Terraform](https://www.terraform.io/)
 - [Terragrunt](https://terragrunt.gruntwork.io/)
 - [Postman](https://www.postman.com/)
@@ -84,7 +84,7 @@ I recommend installing:
 - [Zsh](http://zsh.sourceforge.net/)
 - [jq](https://stedolan.github.io/jq/)
 - wget
-- curl
+- cURL
 - gnupg
 - uuid-runtime
 - Git
