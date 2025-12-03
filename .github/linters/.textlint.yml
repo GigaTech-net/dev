@@ -1,0 +1,3 @@
+rules:
+  spellcheck-tech-word-list: true
+  terminology: true

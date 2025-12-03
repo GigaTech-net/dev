@@ -20,7 +20,7 @@ permissions:
   pull-requests: write
   repository-projects: read
   security-events: read
-  statuses: write  
+  statuses: write
 
 # cancel any previously-started, yet still active runs of this workflow on the same branch
 concurrency:
@@ -74,7 +74,7 @@ jobs:
           GigaTech-net/public-reusable-workflows/.github/actions/spellcheck@main
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
-          filesToIgnore: 'package-lock.json,./.vscode,./.github'
+          filesToIgnore: "package-lock.json,./.vscode,./.github"
 
       # Super Linter using composite action
       - name: Super Linter

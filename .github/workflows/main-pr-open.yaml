@@ -25,7 +25,7 @@ permissions:
   pull-requests: write
   repository-projects: read
   security-events: read
-  statuses: write  
+  statuses: write
 
 # cancel any previously-started, yet still active runs of this workflow on the same branch
 concurrency:
@@ -79,7 +79,7 @@ jobs:
           GigaTech-net/public-reusable-workflows/.github/actions/spellcheck@main
         with:
           github_token: ${{ env.GITHUB_TOKEN }}
-          filesToIgnore: 'package-lock.json,./.vscode,./.github'
+          filesToIgnore: "package-lock.json,./.vscode,./.github"
 
       # Super Linter using composite action
       - name: Super Linter
@@ -104,7 +104,7 @@ jobs:
     uses: GigaTech-net/public-reusable-workflows/.github/workflows/rw-complexity.yaml@main
     with:
       needsReviewLabel: ${{ needs.quality-checks.outputs.NEEDS_REVIEW_LABEL }}
-      tgtBranch: 'origin/master'
+      tgtBranch: "origin/master"
     secrets: inherit
 
   human-review:
@@ -146,7 +146,7 @@ jobs:
     needs: [human-review, enable-auto-merge]
     runs-on: ubuntu-latest
     if: needs.human-review.outputs.human_review_needed == 'false'
-    steps:  
+    steps:
       - name: Approve the PR if human review not needed
         run: gh pr review --approve "$PR_URL"
         env:

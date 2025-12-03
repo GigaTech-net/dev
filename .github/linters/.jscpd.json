@@ -1,9 +1,5 @@
 {
   "threshold": 3,
   "reporters": ["html", "markdown"],
-  "ignore": [
-    "**/.github/**",
-    "**/pagecontent/**",
-    "**/src/**"
-  ]
+  "ignore": ["**/.github/**", "**/pagecontent/**", "**/src/**"]
 }
