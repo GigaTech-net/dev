@@ -51,13 +51,13 @@ simply ignored. A passphrase is prompted for once at container start.
 
 ## Structure
 
-| Path | Holds |
-|---|---|
-| `Dockerfile` | multi-stage build; installs are ordered so tool layers cache |
-| `bin/install-tools.sh` | the toolchain install, run during build |
-| `bin/fhirvalidator.sh` | `java -jar` wrapper on the HL7 validator, on `$PATH` in the image |
-| `bin/start-agent.sh` | conditional ssh-agent bootstrap, sourced at login |
-| `src/.zshrc`, `src/ssh-config` | shell and SSH config baked into the image |
+| Path                           | Holds                                                             |
+| ------------------------------ | ----------------------------------------------------------------- |
+| `Dockerfile`                   | multi-stage build; installs are ordered so tool layers cache      |
+| `bin/install-tools.sh`         | the toolchain install, run during build                           |
+| `bin/fhirvalidator.sh`         | `java -jar` wrapper on the HL7 validator, on `$PATH` in the image |
+| `bin/start-agent.sh`           | conditional ssh-agent bootstrap, sourced at login                 |
+| `src/.zshrc`, `src/ssh-config` | shell and SSH config baked into the image                         |
 
 `install-tools.sh` detects `x86_64` vs `arm64` and **resolves every tool version at build
 time** — Terraform from the HashiCorp checkpoint API, Terragrunt and
@@ -96,7 +96,7 @@ CI validates the format and fails the PR if it does not match:
 <type>: <scope>: <description>
 ```
 
-`<type>` is a Conventional Commits keyword; `<scope>` is `hotfix`, `maint`, or a JIRA
+`<type>` is a Conventional Commits keyword; `<scope>` is `hotfix`, `maint`, or a Jira
 issue ID such as `PRO-1234`. Both colons and both spaces are required.
 
 ## Code comments
@@ -109,6 +109,6 @@ greppable forever, so every later search for it returns the epitaph alongside th
 hits with no way to tell them apart.
 
 Document what the code **is** and does. The change belongs in the commit message, the PR
-body, and the JIRA ticket — all attributed and attached to a diff, which a comment is not.
+body, and the Jira ticket — all attributed and attached to a diff, which a comment is not.
 Where a rejected alternative must be recorded, describe the failure mode without naming
 the dead identifier.
